@@ -33,10 +33,6 @@ public final class Volume extends ValueObject<Volume> {
         return Result.success(new Volume(value));
     }
 
-    public static Volume mustCreate(int value) {
-        return create(value).getValueOrThrow();
-    }
-
     @Override
     protected Iterable<Object> equalityComponents() {
         return List.of(this.value);
