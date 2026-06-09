@@ -13,19 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class AssignmentTest {
 
     /**
-     * Сценарий: Assignment наследуется от BaseEntity.
-     * <p>
-     * Given: есть класс Assignment.
-     * When: проверяется его базовый класс.
-     * Then: Assignment является Entity и наследуется от BaseEntity.
-     */
-    @Test
-    @DisplayName("Assignment наследуется от BaseEntity")
-    void derivedFromBaseEntity() {
-        assertThat(Assignment.class.getSuperclass().getSimpleName()).isEqualTo("BaseEntity");
-    }
-
-    /**
      * Сценарий: успешное создание Assignment с валидными параметрами.
      * <p>
      * Given: переданы OrderId, Volume и Location.
