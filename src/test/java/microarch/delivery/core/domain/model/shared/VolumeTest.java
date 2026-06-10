@@ -1,4 +1,4 @@
-package microarch.delivery.core.domain.model.order;
+package microarch.delivery.core.domain.model.shared;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
