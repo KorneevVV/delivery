@@ -94,34 +94,6 @@ class AssignmentTest {
     }
 
     /**
-     * Сценарий: две Assignment с одинаковым Id должны быть равны.
-     * <p>
-     * Given: восстановлены две Assignment с одинаковым Id и разными остальными полями.
-     * When: выполняется сравнение объектов через equals.
-     * Then: объекты считаются равными и имеют одинаковый hashCode.
-     */
-    @Test
-    @DisplayName("Две Assignment с одинаковым Id должны быть равны")
-    void shouldBeEqualWhenIdsAreEqual() {
-        var id = UUID.randomUUID();
-        var first = Assignment.restore(
-                id,
-                UUID.randomUUID(),
-                Volume.create(1).getValue(),
-                Location.create(1, 1).getValue(),
-                AssignmentStatus.ASSIGNED);
-        var second = Assignment.restore(
-                id,
-                UUID.randomUUID(),
-                Volume.create(5).getValue(),
-                Location.create(9, 9).getValue(),
-                AssignmentStatus.COMPLETED);
-
-        assertThat(first).isEqualTo(second);
-        assertThat(first.hashCode()).isEqualTo(second.hashCode());
-    }
-
-    /**
      * Сценарий: ошибка завершения Assignment, если Location курьера не передан.
      * <p>
      * Given: есть Assignment в статусе ASSIGNED.

@@ -62,24 +62,6 @@ public final class Assignment extends BaseEntity<UUID> {
                 new Assignment(UUID.randomUUID(), orderId, volume, location, AssignmentStatus.ASSIGNED));
     }
 
-    public static Assignment restore(
-            UUID id,
-            UUID orderId,
-            Volume volume,
-            Location location,
-            AssignmentStatus status) {
-        Objects.requireNonNull(volume, "volume");
-        Objects.requireNonNull(location, "location");
-        Objects.requireNonNull(status, "status");
-
-        var err = Guard.combine(
-                Guard.againstNullOrEmpty(id, "id"),
-                Guard.againstNullOrEmpty(orderId, "orderId"));
-        Error.throwIf(err);
-
-        return new Assignment(id, orderId, volume, location, status);
-    }
-
     public UnitResult<Error> complete(Location courierLocation) {
         Objects.requireNonNull(courierLocation, "courierLocation");
 
