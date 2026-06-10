@@ -14,7 +14,7 @@ import libs.errs.UnitResult;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import microarch.delivery.core.domain.model.order.Volume;
+import microarch.delivery.core.domain.model.shared.Volume;
 import microarch.delivery.core.domain.model.shared.Location;
 
 import java.util.Objects;
@@ -49,7 +49,7 @@ public final class Assignment extends BaseEntity<UUID> {
         this.status = status;
     }
 
-    public static Result<Assignment, Error> create(UUID orderId, Volume volume, Location location) {
+    static Result<Assignment, Error> create(UUID orderId, Volume volume, Location location) {
         Objects.requireNonNull(volume, "volume");
         Objects.requireNonNull(location, "location");
 
@@ -62,7 +62,7 @@ public final class Assignment extends BaseEntity<UUID> {
                 new Assignment(UUID.randomUUID(), orderId, volume, location, AssignmentStatus.ASSIGNED));
     }
 
-    public UnitResult<Error> complete(Location courierLocation) {
+    UnitResult<Error> complete(Location courierLocation) {
         Objects.requireNonNull(courierLocation, "courierLocation");
 
         if (this.status == AssignmentStatus.COMPLETED) {

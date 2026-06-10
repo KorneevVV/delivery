@@ -1,6 +1,6 @@
 package microarch.delivery.core.domain.model.courier;
 
-import microarch.delivery.core.domain.model.order.Volume;
+import microarch.delivery.core.domain.model.shared.Volume;
 import microarch.delivery.core.domain.model.shared.Location;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
