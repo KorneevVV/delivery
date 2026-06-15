@@ -121,7 +121,14 @@ public final class Courier extends Aggregate<UUID> {
             return UnitResult.failure(Errors.assignmentNotFound());
         }
 
-        return assignment.get().complete(this.location);
+        var assignmentToComplete = assignment.get();
+        var completeResult = assignmentToComplete.complete(this.location);
+        if (completeResult.isFailure()) {
+            return completeResult;
+        }
+
+        this.assignments.remove(assignmentToComplete);
+        return completeResult;
     }
 
     public void moveTo(Location location) {

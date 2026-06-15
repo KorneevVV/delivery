@@ -122,7 +122,7 @@ class CourierTest {
      * <p>
      * Given: есть Courier с активным Assignment на весь доступный объем.
      * When: Assignment успешно завершается.
-     * Then: завершенный Assignment больше не учитывается в активном объеме курьера.
+     * Then: завершенный Assignment удаляется из списка назначений и больше не учитывается в активном объеме курьера.
      */
     @Test
     @DisplayName("Courier освобождает объем после завершения Assignment")
@@ -134,6 +134,7 @@ class CourierTest {
         var completeResult = courier.completeAssignment(firstOrderId);
 
         assertThat(completeResult.isSuccess()).isTrue();
+        assertThat(courier.getAssignments()).isEmpty();
         assertThat(courier.canTake(Volume.create(20).getValue())).isTrue();
     }
 
@@ -188,7 +189,7 @@ class CourierTest {
      * <p>
      * Given: есть Courier и Assignment с Location заказа на расстоянии одной клетки.
      * When: вызывается метод completeAssignment.
-     * Then: возвращается успешный результат, а Assignment переходит в статус COMPLETED.
+     * Then: возвращается успешный результат, а Assignment удаляется из списка назначений.
      */
     @Test
     @DisplayName("Courier завершает Assignment, если находится в одной клетке от заказа")
@@ -200,7 +201,7 @@ class CourierTest {
         var result = courier.completeAssignment(orderId);
 
         assertThat(result.isSuccess()).isTrue();
-        assertThat(courier.getAssignments().getFirst().getStatus()).isEqualTo(AssignmentStatus.COMPLETED);
+        assertThat(courier.getAssignments()).isEmpty();
     }
 
     /**
