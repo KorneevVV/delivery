@@ -1,5 +1,6 @@
 package microarch.delivery.core.domain.model.shared;
 
+import jakarta.persistence.Embeddable;
 import libs.ddd.ValueObject;
 import libs.errs.Error;
 import libs.errs.Guard;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.Objects;
 
+@Embeddable
 @Getter
 @NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

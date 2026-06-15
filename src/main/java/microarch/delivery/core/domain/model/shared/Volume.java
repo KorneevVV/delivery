@@ -1,4 +1,4 @@
-package microarch.delivery.core.domain.model.order;
+package microarch.delivery.core.domain.model.shared;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
