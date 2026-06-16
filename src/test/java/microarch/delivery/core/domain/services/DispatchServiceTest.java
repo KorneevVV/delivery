@@ -30,11 +30,14 @@ class DispatchServiceTest {
     @Test
     @DisplayName("Успешная диспетчеризация назначает заказ курьеру")
     void shouldDispatchOrderToCourier() {
+        // Given
         var order = createOrderAt(Location.create(5, 5).getValue(), 3);
         var courier = createCourierAt(Location.create(5, 6).getValue());
 
+        // When
         var result = dispatchService.dispatch(order, List.of(courier));
 
+        // Then
         assertThat(result.isSuccess()).isTrue();
         assertThat(result.getValue()).isSameAs(courier);
         assertThat(order.getStatus()).isEqualTo(OrderStatus.ASSIGNED);
@@ -55,12 +58,15 @@ class DispatchServiceTest {
     @Test
     @DisplayName("Выбирается ближайший курьер")
     void shouldChooseNearestCourier() {
+        // Given
         var order = createOrderAt(Location.create(5, 5).getValue(), 3);
         var farCourier = createCourierAt(Location.create(1, 1).getValue());
         var nearCourier = createCourierAt(Location.create(5, 6).getValue());
 
+        // When
         var result = dispatchService.dispatch(order, List.of(farCourier, nearCourier));
 
+        // Then
         assertThat(result.isSuccess()).isTrue();
         assertThat(result.getValue()).isSameAs(nearCourier);
         assertThat(nearCourier.getAssignments()).hasSize(1);
@@ -77,12 +83,15 @@ class DispatchServiceTest {
     @Test
     @DisplayName("При одинаковой дистанции выбирается первый курьер")
     void shouldChooseFirstCourierWhenDistanceIsEqual() {
+        // Given
         var order = createOrderAt(Location.create(5, 5).getValue(), 3);
         var firstCourier = createCourierAt(Location.create(4, 5).getValue());
         var secondCourier = createCourierAt(Location.create(5, 6).getValue());
 
+        // When
         var result = dispatchService.dispatch(order, List.of(firstCourier, secondCourier));
 
+        // Then
         assertThat(result.isSuccess()).isTrue();
         assertThat(result.getValue()).isSameAs(firstCourier);
         assertThat(firstCourier.getAssignments()).hasSize(1);
@@ -99,13 +108,16 @@ class DispatchServiceTest {
     @Test
     @DisplayName("Переполненный курьер пропускается")
     void shouldSkipCourierWithoutCapacity() {
+        // Given
         var order = createOrderAt(Location.create(5, 5).getValue(), 3);
         var fullCourier = createCourierAt(Location.create(5, 6).getValue());
         fullCourier.assign(UUID.randomUUID(), Volume.create(20).getValue(), Location.create(5, 7).getValue());
         var availableCourier = createCourierAt(Location.create(1, 1).getValue());
 
+        // When
         var result = dispatchService.dispatch(order, List.of(fullCourier, availableCourier));
 
+        // Then
         assertThat(result.isSuccess()).isTrue();
         assertThat(result.getValue()).isSameAs(availableCourier);
         assertThat(fullCourier.getAssignments()).hasSize(1);
@@ -123,12 +135,15 @@ class DispatchServiceTest {
     @Test
     @DisplayName("Если все курьеры переполнены, возвращается ошибка")
     void shouldFailWhenAllCouriersAreFull() {
+        // Given
         var order = createOrderAt(Location.create(5, 5).getValue(), 3);
         var firstCourier = createFullCourierAt(Location.create(5, 6).getValue());
         var secondCourier = createFullCourierAt(Location.create(1, 1).getValue());
 
+        // When
         var result = dispatchService.dispatch(order, List.of(firstCourier, secondCourier));
 
+        // Then
         assertThat(result.isFailure()).isTrue();
         assertThat(result.getError()).isEqualTo(DispatchService.Errors.courierNotFound());
         assertThat(order.getStatus()).isEqualTo(OrderStatus.CREATED);
@@ -146,11 +161,14 @@ class DispatchServiceTest {
     @Test
     @DisplayName("Пустой или null список курьеров возвращает ошибку")
     void shouldFailWhenCourierListIsNullOrEmpty() {
+        // Given
         var order = createOrderAt(Location.create(5, 5).getValue(), 3);
 
+        // When
         var nullResult = dispatchService.dispatch(order, null);
         var emptyResult = dispatchService.dispatch(order, List.of());
 
+        // Then
         assertThat(nullResult.isFailure()).isTrue();
         assertThat(nullResult.getError()).isEqualTo(GeneralErrors.valueIsRequired("couriers"));
         assertThat(emptyResult.isFailure()).isTrue();
@@ -168,11 +186,14 @@ class DispatchServiceTest {
     @Test
     @DisplayName("Null в списке курьеров возвращает ошибку")
     void shouldFailWhenCourierListContainsNull() {
+        // Given
         var order = createOrderAt(Location.create(5, 5).getValue(), 3);
         var courier = createCourierAt(Location.create(5, 6).getValue());
 
+        // When
         var result = dispatchService.dispatch(order, Arrays.asList(courier, null));
 
+        // Then
         assertThat(result.isFailure()).isTrue();
         assertThat(result.getError()).isEqualTo(GeneralErrors.valueIsRequired("courier"));
         assertThat(order.getStatus()).isEqualTo(OrderStatus.CREATED);
@@ -189,12 +210,15 @@ class DispatchServiceTest {
     @Test
     @DisplayName("Заказ не в CREATED возвращает ошибку")
     void shouldFailWhenOrderIsNotCreated() {
+        // Given
         var order = createOrderAt(Location.create(5, 5).getValue(), 3);
         order.assign();
         var courier = createCourierAt(Location.create(5, 6).getValue());
 
+        // When
         var result = dispatchService.dispatch(order, List.of(courier));
 
+        // Then
         assertThat(result.isFailure()).isTrue();
         assertThat(result.getError()).isEqualTo(DispatchService.Errors.orderMustBeCreated());
         assertThat(order.getStatus()).isEqualTo(OrderStatus.ASSIGNED);
@@ -211,10 +235,13 @@ class DispatchServiceTest {
     @Test
     @DisplayName("Null заказ возвращает ошибку")
     void shouldFailWhenOrderIsNull() {
+        // Given
         var courier = createCourierAt(Location.create(5, 6).getValue());
 
+        // When
         var result = dispatchService.dispatch(null, List.of(courier));
 
+        // Then
         assertThat(result.isFailure()).isTrue();
         assertThat(result.getError()).isEqualTo(GeneralErrors.valueIsRequired("order"));
         assertThat(courier.getAssignments()).isEmpty();
@@ -230,10 +257,14 @@ class DispatchServiceTest {
     @Test
     @DisplayName("DispatchService создается как Spring bean")
     void shouldCreateDispatchServiceBean() {
+        // Given
         try (var context = new AnnotationConfigApplicationContext()) {
             context.scan("microarch.delivery.core.domain.services");
+
+            // When
             context.refresh();
 
+            // Then
             assertThat(context.getBean(DispatchService.class)).isNotNull();
         }
     }
