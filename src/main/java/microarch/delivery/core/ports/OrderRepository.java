@@ -18,4 +18,6 @@ public interface OrderRepository {
     Result<Order, Error> getAnyCreated();
 
     List<Order> getAllAssigned();
+
+    List<Order> getAllNotCompleted();
 }
