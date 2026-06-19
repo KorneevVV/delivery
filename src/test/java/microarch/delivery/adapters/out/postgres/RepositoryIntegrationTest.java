@@ -23,6 +23,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
+@Transactional
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class RepositoryIntegrationTest extends PostgresIntegrationTestBase {
 
@@ -115,31 +116,34 @@ class RepositoryIntegrationTest extends PostgresIntegrationTestBase {
     }
 
     /**
-     * Сценарий: repository возвращает все Order в статусе ASSIGNED.
+     * Сценарий: repository возвращает все незавершенные Order.
      * <p>
-     * Given: сохранены Order в статусах CREATED и ASSIGNED.
-     * When: вызывается getAllAssigned.
-     * Then: возвращаются только назначенные заказы.
+     * Given: сохранены Order в статусах CREATED, ASSIGNED и COMPLETED.
+     * When: вызывается getAllNotCompleted.
+     * Then: возвращаются только созданные и назначенные заказы.
      */
     @Test
-    @DisplayName("Repository возвращает все Order в статусе ASSIGNED")
-    void shouldReturnAllAssignedOrders() {
-        var firstAssigned = createOrder();
-        firstAssigned.assign();
-        var secondAssigned = createOrder();
-        secondAssigned.assign();
+    @DisplayName("Repository возвращает все незавершенные Order")
+    void shouldReturnAllNotCompletedOrders() {
         var createdOrder = createOrder();
+        var assignedOrder = createOrder();
+        assignedOrder.assign();
+        var completedOrder = createOrder();
+        completedOrder.assign();
+        completedOrder.complete();
 
-        orderRepository.add(firstAssigned);
-        orderRepository.add(secondAssigned);
         orderRepository.add(createdOrder);
+        orderRepository.add(assignedOrder);
+        orderRepository.add(completedOrder);
         entityManager.flush();
         entityManager.clear();
 
-        var assignedOrders = orderRepository.getAllAssigned();
+        var notCompletedOrders = orderRepository.getAllNotCompleted();
 
-        assertThat(assignedOrders).hasSize(2);
-        assertThat(assignedOrders).allMatch(order -> order.getStatus() == OrderStatus.ASSIGNED);
+        assertThat(notCompletedOrders).hasSize(2);
+        assertThat(notCompletedOrders)
+                .extracting(Order::getStatus)
+                .containsExactlyInAnyOrder(OrderStatus.CREATED, OrderStatus.ASSIGNED);
     }
 
     /**
@@ -229,7 +233,6 @@ class RepositoryIntegrationTest extends PostgresIntegrationTestBase {
      */
     @Test
     @DisplayName("Разные агрегаты можно сохранить в одной транзакции и затем откатить")
-    @Transactional
     void shouldRollbackMultipleAggregatesInOneTransaction() {
         var order = createOrder();
         var courier = createCourier();

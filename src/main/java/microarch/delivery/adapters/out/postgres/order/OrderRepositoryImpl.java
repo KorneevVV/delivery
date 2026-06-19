@@ -8,6 +8,7 @@ import microarch.delivery.core.domain.model.order.OrderStatus;
 import microarch.delivery.core.ports.OrderRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,5 +48,10 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public List<Order> getAllAssigned() {
         return repository.findAllByStatus(OrderStatus.ASSIGNED);
+    }
+
+    @Override
+    public List<Order> getAllNotCompleted() {
+        return repository.findAllByStatusIn(EnumSet.of(OrderStatus.CREATED, OrderStatus.ASSIGNED));
     }
 }
